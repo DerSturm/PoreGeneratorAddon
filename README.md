@@ -1,7 +1,13 @@
 # PoreGeneratorAddon
+
 This is a pore-generating tool for Blender.
 
-Requires a high-resolution mesh.
+It requires a high-resolution mesh.
+
+# Important
+This tool is still being developed.
+
+
 
 ## How to use ##
 - Download the file
