@@ -33,14 +33,14 @@ class PoreGeneratorMainPanel(bpy.types.Panel):
 class GENERATOR_OT_PORES(bpy.types.Operator):
     bl_label = "Generate"
     bl_idname = 'object.pore_generator'
-
-    RATIO = 0.03
-    DEPTH = 0.0001
-    DEPTH_RDM = 0.1 # between 0 and 1
-    SIZE = 0.01
-    SIZE_RDM = 1 # between 0 and 1
     
     def execute(self, context):
+        RATIO = 0.03
+        DEPTH = 0.0001
+        DEPTH_RDM = 0.1 # between 0 and 1
+        SIZE = 0.01
+        SIZE_RDM = 1 # between 0 and 1
+
         bpy.ops.object.mode_set(mode = 'EDIT') 
 
         context = bpy.context
@@ -92,6 +92,8 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
             pair[0].select = True
             pair[1].select = True
             bpy.ops.mesh.shortest_path_select()
+
+        return {'FINISHED'}
 
 
 def register():
