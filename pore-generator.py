@@ -11,6 +11,7 @@ bl_info = {
 }
 
 
+from email.policy import default
 import bpy
 import bmesh
 import random
@@ -24,7 +25,17 @@ class PoreGeneratorMainPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-
+        row = layout.row()
+        row.prop(context.scene, "pore_ratio_prop")
+        row = layout.row()
+        row.prop(context.scene, "pore_depth_prop")
+        row = layout.row()
+        row.prop(context.scene, "pore_depthrdm_prop")
+        row = layout.row()
+        row.prop(context.scene, "pore_size_prop")
+        row = layout.row()
+        row.prop(context.scene, "pore_sizerdm_prop")
+        row = layout.row()
         row = layout.row()
         row.operator('object.pore_generator')
         
@@ -35,12 +46,17 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
     bl_idname = 'object.pore_generator'
     
     def execute(self, context):
-        RATIO = 0.03
-        DEPTH = 0.0001
-        DEPTH_RDM = 0.1 # between 0 and 1
-        SIZE = 0.01
-        SIZE_RDM = 1 # between 0 and 1
 
+        scene = context.scene
+
+        ratio = scene.pore_ratio_prop
+        depth = scene.pore_depth_prop
+        depth_rdm = scene.pore_depthrdm_prop
+        size = scene.pore_size_prop
+        size_rdm = scene.pore_sizerdm_prop
+
+        print(ratio)
+        
         bpy.ops.object.mode_set(mode = 'EDIT') 
 
         context = bpy.context
@@ -50,7 +66,7 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
         #select random vertices....
         bpy.ops.mesh.select_mode(type="VERT")
         bpy.ops.mesh.select_all(action = 'DESELECT')
-        bpy.ops.mesh.select_random(ratio=RATIO)
+        bpy.ops.mesh.select_random(ratio=ratio)
 
         #...and store them into our pores vertex group
         vertex_group_data = [i.index for i in context.active_object.data.vertices if i.select]
@@ -67,8 +83,8 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
         for idx in vertex_group_data:
             v = bm.verts[idx]
             v.select = True
-            transform = -v.normal * (DEPTH + random.random() * DEPTH_RDM * DEPTH * 2 - (DEPTH_RDM * DEPTH))
-            randomized_size = SIZE + (random.random() * SIZE_RDM * SIZE * 2) - (SIZE_RDM * SIZE)
+            transform = -v.normal * (depth + random.random() * depth_rdm * depth * 2 - (depth_rdm * depth))
+            randomized_size = size + (random.random() * size_rdm * size * 2) - (size_rdm * size)
             bpy.ops.transform.translate(value=transform, 
                                 constraint_axis=(False, False, False),
                                 orient_type='GLOBAL',
@@ -98,11 +114,21 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
 
 def register():
     bpy.utils.register_class(PoreGeneratorMainPanel)
+    bpy.types.Scene.pore_ratio_prop = bpy.props.FloatProperty(name="Pore ratio", description="The pore ratio.", default=0.01, min=0, max=1)
+    bpy.types.Scene.pore_depth_prop = bpy.props.FloatProperty(name="Pore depth", description="The pore depth.", default=0.01, min=0, max=1)
+    bpy.types.Scene.pore_depthrdm_prop = bpy.props.FloatProperty(name="Pore depth randomness", description="The pore ratio.", default=0.01, min=0, max=1)
+    bpy.types.Scene.pore_size_prop = bpy.props.FloatProperty(name="Pore radius", description="The pore radius.", default=0.01, min=0, max=1)
+    bpy.types.Scene.pore_sizerdm_prop = bpy.props.FloatProperty(name="Pore radius randomness", description="The pore size radnomness.", default=0.01, min=0, max=1)
     bpy.utils.register_class(GENERATOR_OT_PORES)
     
 
 def unregister():
     bpy.utils.unregister_class(PoreGeneratorMainPanel)
+    del bpy.types.Scene.pore_ratio_prop
+    del bpy.types.Scene.pore_depth_prop
+    del bpy.types.Scene.pore_depthrdm_prop
+    del bpy.types.Scene.pore_size_prop
+    del bpy.types.Scene.pore_sizerdm_prop
     bpy.utils.unregister_class(GENERATOR_OT_PORES)
 
 
