@@ -109,6 +109,9 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
             pair[1].select = True
             bpy.ops.mesh.shortest_path_select()
 
+
+        bpy.ops.object.mode_set(mode = 'OBJECT') 
+        
         return {'FINISHED'}
 
 
