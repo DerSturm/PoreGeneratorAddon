@@ -30,11 +30,7 @@ class PoreGeneratorMainPanel(bpy.types.Panel):
         row = layout.row()
         row.prop(context.scene, "pore_depth_prop")
         row = layout.row()
-        row.prop(context.scene, "pore_depthrdm_prop")
-        row = layout.row()
         row.prop(context.scene, "pore_size_prop")
-        row = layout.row()
-        row.prop(context.scene, "pore_sizerdm_prop")
         row = layout.row()
         row = layout.row()
         row.operator('object.pore_generator')
@@ -51,9 +47,7 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
 
         ratio = scene.pore_ratio_prop
         depth = scene.pore_depth_prop
-        depth_rdm = scene.pore_depthrdm_prop
         size = scene.pore_size_prop
-        size_rdm = scene.pore_sizerdm_prop
 
         print(ratio)
         
@@ -83,15 +77,14 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
         for idx in vertex_group_data:
             v = bm.verts[idx]
             v.select = True
-            transform = -v.normal * (depth + random.random() * depth_rdm * depth * 2 - (depth_rdm * depth))
-            randomized_size = size + (random.random() * size_rdm * size * 2) - (size_rdm * size)
+            transform = -v.normal * depth
             bpy.ops.transform.translate(value=transform, 
                                 constraint_axis=(False, False, False),
                                 orient_type='GLOBAL',
                                 use_proportional_edit=True,
                                 mirror=False, 
                                 proportional_edit_falloff='SHARP',
-                                proportional_size=randomized_size)
+                                proportional_size=size)
             v.select = False
 
         pore_pairs = []
@@ -111,7 +104,7 @@ class GENERATOR_OT_PORES(bpy.types.Operator):
 
 
         bpy.ops.object.mode_set(mode = 'OBJECT') 
-        
+
         return {'FINISHED'}
 
 
@@ -119,9 +112,7 @@ def register():
     bpy.utils.register_class(PoreGeneratorMainPanel)
     bpy.types.Scene.pore_ratio_prop = bpy.props.FloatProperty(name="Pore ratio", description="The pore ratio.", default=0.01, min=0, max=1)
     bpy.types.Scene.pore_depth_prop = bpy.props.FloatProperty(name="Pore depth", description="The pore depth.", default=0.01, min=0, max=1)
-    bpy.types.Scene.pore_depthrdm_prop = bpy.props.FloatProperty(name="Pore depth randomness", description="The pore ratio.", default=0.01, min=0, max=1)
     bpy.types.Scene.pore_size_prop = bpy.props.FloatProperty(name="Pore radius", description="The pore radius.", default=0.01, min=0, max=1)
-    bpy.types.Scene.pore_sizerdm_prop = bpy.props.FloatProperty(name="Pore radius randomness", description="The pore size radnomness.", default=0.01, min=0, max=1)
     bpy.utils.register_class(GENERATOR_OT_PORES)
     
 
