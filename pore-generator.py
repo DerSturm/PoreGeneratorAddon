@@ -10,8 +10,6 @@ bl_info = {
     "category": "Add Pores",
 }
 
-
-from email.policy import default
 import bpy
 import bmesh
 import random
